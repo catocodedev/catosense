@@ -74,6 +74,34 @@ export function activate(context: vscode.ExtensionContext) {
 			];
 		}
 	});
+	const console2com = vscode.languages.registerCompletionItemProvider('plaintext', {
+
+		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
+
+
+			// a completion item that inserts its text as snippet,
+			// the `insertText`-property is a `SnippetString` which will be
+			// honored by the editor.
+			const snippetCompletion = new vscode.CompletionItem('console.send |""|');
+			snippetCompletion.insertText = new vscode.SnippetString('console.send |"meow"|');
+			snippetCompletion.documentation = new vscode.MarkdownString("Send a msg to the console");
+
+			// a completion item that can be accepted by a commit character,
+			// the `commitCharacters`-property is set which means that the completion will
+			// be inserted and then the character will be typed.
+			const commitCharacterCompletion = new vscode.CompletionItem('debug.');
+			commitCharacterCompletion.commitCharacters = ['.'];
+			commitCharacterCompletion.documentation = new vscode.MarkdownString('Press `.` to get `debug.`');
+
+			// 
+			
+			// return all completion items as array
+			return [
+				snippetCompletion,
+				commitCharacterCompletion
+			];
+		}
+	});
 	const randomcom = vscode.languages.registerCompletionItemProvider('plaintext', {
 
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
@@ -297,7 +325,7 @@ export function activate(context: vscode.ExtensionContext) {
 			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
 
 				const linePrefix = document.lineAt(position).text.substr(0, position.character);
-				if (!linePrefix.endsWith('send') || !linePrefix.endsWith('throw') || !linePrefix.endsWith('num') || !linePrefix.endsWith('send.kit')) {
+				if (!linePrefix.endsWith('send ') || !linePrefix.endsWith('throw ') || !linePrefix.endsWith('num ') || !linePrefix.endsWith('send.kit ')) {
 					return undefined;
 				}
 
@@ -308,5 +336,22 @@ export function activate(context: vscode.ExtensionContext) {
 		},
 		'|' // triggered whenever a '|' is being typed
 	);
-	context.subscriptions.push(consolecom, consolesettings, debugcom, debugsettings, randomcom, randomsettings, scriptpausecom, scriptsettings, scriptpausesettings, getcom, getsettings, atsettings);
+	const fillkit = vscode.languages.registerCompletionItemProvider(
+		'plaintext',
+		{
+			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+
+				const linePrefix = document.lineAt(position).text.substr(0, position.character);
+				if (!linePrefix.endsWith('@kit ')) {
+					return undefined;
+				}
+
+				return [
+					new vscode.CompletionItem(' {"name","value"}', vscode.CompletionItemKind.Method),
+				];
+			}
+		},
+		'{' // triggered whenever a '|' is being typed
+	);
+	context.subscriptions.push(consolecom, console2com, consolesettings, debugcom, debugsettings, randomcom, randomsettings, scriptpausecom, scriptsettings, scriptpausesettings, getcom, getsettings, atsettings, fillbrackets, fillkit);
 }
