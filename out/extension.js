@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = void 0;
 const vscode = require("vscode");
 function activate(context) {
-    const consolecom = vscode.languages.registerCompletionItemProvider('plaintext', {
+    const consolecom = vscode.languages.registerCompletionItemProvider('cato', {
         provideCompletionItems(document, position, token, context) {
             // a simple completion item which inserts `%` for comments
             const simpleCompletion = new vscode.CompletionItem('%');
@@ -223,7 +223,19 @@ function activate(context) {
                 new vscode.CompletionItem('kit', vscode.CompletionItemKind.Method),
             ];
         }
-    }, '@' // triggered whenever a '.' is being typed
+    }, '@' // triggered whenever a '@' is being typed
+    );
+    const fillbrackets = vscode.languages.registerCompletionItemProvider('plaintext', {
+        provideCompletionItems(document, position) {
+            const linePrefix = document.lineAt(position).text.substr(0, position.character);
+            if (!linePrefix.endsWith('send') || !linePrefix.endsWith('throw') || !linePrefix.endsWith('num') || !linePrefix.endsWith('send.kit')) {
+                return undefined;
+            }
+            return [
+                new vscode.CompletionItem(' |""|', vscode.CompletionItemKind.Method),
+            ];
+        }
+    }, '|' // triggered whenever a '|' is being typed
     );
     context.subscriptions.push(consolecom, consolesettings, debugcom, debugsettings, randomcom, randomsettings, scriptpausecom, scriptsettings, scriptpausesettings, getcom, getsettings, atsettings);
 }

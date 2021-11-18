@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	const consolecom = vscode.languages.registerCompletionItemProvider('plaintext', {
+	const consolecom = vscode.languages.registerCompletionItemProvider('cato', {
 
 		provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
 
@@ -289,7 +289,24 @@ export function activate(context: vscode.ExtensionContext) {
 				];
 			}
 		},
-		'@' // triggered whenever a '.' is being typed
+		'@' // triggered whenever a '@' is being typed
+	);
+	const fillbrackets = vscode.languages.registerCompletionItemProvider(
+		'plaintext',
+		{
+			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+
+				const linePrefix = document.lineAt(position).text.substr(0, position.character);
+				if (!linePrefix.endsWith('send') || !linePrefix.endsWith('throw') || !linePrefix.endsWith('num') || !linePrefix.endsWith('send.kit')) {
+					return undefined;
+				}
+
+				return [
+					new vscode.CompletionItem(' |""|', vscode.CompletionItemKind.Method),
+				];
+			}
+		},
+		'|' // triggered whenever a '|' is being typed
 	);
 	context.subscriptions.push(consolecom, consolesettings, debugcom, debugsettings, randomcom, randomsettings, scriptpausecom, scriptsettings, scriptpausesettings, getcom, getsettings, atsettings);
 }

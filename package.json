@@ -1,7 +1,9 @@
 {
 	"name": "CatoSense",
 	"displayName": "CatoSense",
-	"version": "0.1.0",
+	"version": "0.1.1",
+	"description": "Code cato with ez",
+	"icon": "src/cato.png",
 	"publisher": "CatoScript",
 	"private": true,
 	"license": "MIT",
